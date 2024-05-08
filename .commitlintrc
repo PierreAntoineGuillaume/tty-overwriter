@@ -1,0 +1,3 @@
+rules:
+  type-enum:
+    [ 2, always, [ "fix", "feat", "build", "chore", "ci", "docs", "style", "refactor", "perf", "test"] ]
