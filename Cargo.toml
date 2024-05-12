@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 [dev-dependencies]
 ctrlc = "^3"
+term_size = "^0.3.2"
