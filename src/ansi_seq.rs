@@ -1,6 +1,11 @@
 use std::fmt::{Display, Formatter, Write};
 
-#[derive(Default)]
+/// A shorthand builder for `AnsiSeq::Move`
+/// ```no_run
+/// use tty_overwriter::prelude::Movement;
+/// let movement = Movement::new().down(3).left(2);
+/// ```
+#[derive(Default, Copy, Clone, Eq, Ord, PartialOrd, PartialEq, Hash, Debug)]
 pub struct Movement {
     up: u16,
     down: u16,
@@ -26,55 +31,92 @@ impl Display for Movement {
 }
 
 impl Movement {
+    /// empty constructor
     pub fn new() -> Self {
         Default::default()
     }
 
+    #[allow(missing_docs)]
     #[inline]
     pub fn up(self, up: u16) -> Self {
         Self { up, ..self }
     }
 
+    #[allow(missing_docs)]
     #[inline]
     pub fn down(self, down: u16) -> Self {
         Self { down, ..self }
     }
-    #[inline]
 
+    #[allow(missing_docs)]
+    #[inline]
     pub fn right(self, right: u16) -> Self {
         Self { right, ..self }
     }
+
+    #[allow(missing_docs)]
     #[inline]
     pub fn left(self, left: u16) -> Self {
         Self { left, ..self }
     }
 }
 
-/// Codes provided by https://handwiki.org/wiki/ANSI_escape_code#Colors
-#[derive(Copy, Clone, Debug)]
+/// A list of Ansi sequences.
+/// Thought to be written to `std::io::Write`.
+/// ```
+/// use tty_overwriter::prelude::AnsiSeq;
+/// print!("Hello, word!");
+/// // we did a spelling mistake
+/// let left = AnsiSeq::AbsoluteMove {horizontal: 0};
+/// println!("{left}Hello, world!")
+/// ```
+/// Codes provided by [Hand Wiki](https://handwiki.org/wiki/ANSI_escape_code#Colors)
+/// For ease of debugging, if cfg(test) then `AnsiSeq::fmt` will actually
+/// display the code.
+#[derive(Copy, Clone, Eq, Ord, PartialOrd, PartialEq, Hash, Debug)]
 pub enum AnsiSeq {
+    /// Move in straight line. Applied in order:  Up, Left, Down, Right.
     Move {
+        /// Move n spaces right
         up: u16,
+        /// Move n spaces down
         down: u16,
+        /// Move n spaces left
         left: u16,
+        /// Move n spaces right
         right: u16,
     },
+    /// Move vertically to the beginning of lines. Applied in order: Up, Down.
     MoveLines {
+        /// Move n lines up
         up: u16,
+        /// Move n lines down
         down: u16,
     },
+    /// toggle OFF all styles
     ResetStyle,
+    /// toggle ON the Underline style
     Underline,
+    /// clear the part of the line on the right of the cursor
     ClearCursorToEndOfLine,
+    /// clear the part of the line on the left of the cursor
     ClearCursorToBeginningOfLine,
+    /// Clear the line of the terminal on which is the cursor
     ClearLine,
+    /// Clear the terminal under the cursor
     ClearCursorToEndOfScreen,
+    /// Clear the terminal over the cursor
     ClearCursorToBeginningOfScreen,
+    /// Clear the entirety of the terminal
     ClearAllScreen,
+    /// Show and hide mouse cursor
     ShowAndHideCursor {
+        /// should or shouldn't show the cursor
         show: bool,
     },
+    /// Set the cursor horizontally
     AbsoluteMove {
+        /// horizontal position of the cursor
         horizontal: u16,
     },
 }

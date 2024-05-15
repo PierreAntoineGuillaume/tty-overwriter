@@ -1,7 +1,11 @@
 [package]
 name = "tty-overwriter"
+description = "A lib to ease overwriting text in stdout. Make a body, then overwrite it as much as needed."
+repository = "https://github.com/PierreAntoineGuillaume/tty-overwriter"
+readme = "README.md"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 [dev-dependencies]

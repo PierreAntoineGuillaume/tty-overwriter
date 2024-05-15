@@ -2,6 +2,7 @@ use crate::prelude::AnsiSeq;
 use std::io::Write;
 
 #[derive(Debug, Default)]
+/// A struct to call `overwrite` on, to avoid flicker in terminal.
 pub struct Body {
     buffer: Vec<usize>,
 }
@@ -11,7 +12,18 @@ const CLEAR_TIL_EOF: AnsiSeq = AnsiSeq::ClearCursorToEndOfScreen;
 const JUMP_AT_BEGINNING: AnsiSeq = AnsiSeq::AbsoluteMove { horizontal: 0 };
 
 impl Body {
-    pub fn overwrite<T, Writer>(&mut self, new_text: &T, write: &mut Writer, available_width: usize) -> std::io::Result<()>
+    /// overwrite:
+    /// write `new_text` to `write`
+    /// and erase the previous text you overwrote with AnsiSeq codes,
+    /// making educated guesses about the height to clear
+    /// from `available_width` variable and `self.buffer` previous text line lengths.
+    /// The goal of `Body` and overwrite is to provide easy text writing to terminal without flicker.
+    pub fn overwrite<T, Writer>(
+        &mut self,
+        new_text: &T,
+        mut write: Writer,
+        available_width: usize,
+    ) -> std::io::Result<()>
     where
         Writer: Write,
         T: ToString,
@@ -58,10 +70,15 @@ impl Body {
         Ok(())
     }
 
+    /// create a new Body
+    pub fn new() -> Self {
+        Default::default()
+    }
+
     fn guess_previous_body_height(&self, available_width: usize) -> usize {
         let mut lines = 0;
         for line in &self.buffer {
-            lines+= line/available_width + 1;
+            lines += line / available_width + 1;
         }
         lines
     }
@@ -84,7 +101,10 @@ mod tests {
 
         body.overwrite(&"content + content", &mut buf, 80)?;
         let string = String::from_utf8(buf.clone())?;
-        assert_eq!("content\\e[0K\\e[0J\\e[0Gcontent + content\\e[0K\\e[0J", string);
+        assert_eq!(
+            "content\\e[0K\\e[0J\\e[0Gcontent + content\\e[0K\\e[0J",
+            string
+        );
 
         body.overwrite(&"none", &mut buf, 80)?;
         let string = String::from_utf8(buf.clone())?;
