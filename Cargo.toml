@@ -6,6 +6,8 @@ readme = "README.md"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+keywords = ["terminal", "cli", "ansi", "flicker"]
+categories = ["accessibility", "command-line-interface"]
 
 [dependencies]
 [dev-dependencies]
