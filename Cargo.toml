@@ -8,7 +8,7 @@ edition = "2021"
 license = "MIT"
 keywords = ["terminal", "cli", "ansi", "flicker"]
 categories = ["accessibility", "command-line-interface"]
-
+exclude = [".gitignore", ".commitlintrc"]
 [dependencies]
 [dev-dependencies]
 ctrlc = "^3"
